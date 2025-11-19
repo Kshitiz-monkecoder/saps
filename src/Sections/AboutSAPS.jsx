@@ -13,7 +13,7 @@ const data = [
   {
     letter: "A",
     title: "ARTISTRY",
-    desc: "Where creative direction meets visual elegance — every frame, word, and element crafted with intent.",
+    desc: "Where creative direction meets visual elegance every frame, word, and element crafted with intent.",
   },
   {
     letter: "P",
@@ -99,7 +99,7 @@ export default function AboutSAPS() {
       className="relative w-full min-h-screen bg-[#0f0f0f] text-white py-[200px] px-10"
     >
       {/* MAIN TITLE */}
-      <h1 className="main-title text-center text-[130px] font-cinzel tracking-[0.1em] text-[#d4b878] mb-[200px]">
+      <h1 className="main-title text-center text-[130px] font-cinzel tracking-widest text-[#d4b878] mb-[200px]">
         SAPS
       </h1>
 
