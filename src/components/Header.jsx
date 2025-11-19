@@ -5,13 +5,12 @@ const Header = () => {
     <header className="absolute top-0 left-0 w-full z-20 backdrop-blur-md bg-black/20 border-b border-white/10">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-8 py-4">
 
-        {/* ✨ Logo */}
-        <h1
-          className="text-3xl font-cinzel tracking-wider"
-          style={{ color: '#CBA34C' }}
-        >
-          SA
-        </h1>
+        {/* 🌟 Logo Image */}
+        <img
+          src="/logo.png"         // <-- Put your logo file in /public/logo.png
+          alt="SA Logo"
+          className="h-10 w-auto object-contain" 
+        />
 
         {/* 🧭 Navigation Links */}
         <nav className="flex space-x-8 text-gray-300 font-gotham font-medium">

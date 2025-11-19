@@ -1,96 +1,71 @@
 import React, { useRef, useEffect } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, useGLTF, Environment } from '@react-three/drei'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { useGLTF, Environment } from '@react-three/drei'
 import * as THREE from 'three'
+
+// 👉 CONFIG — change these anytime
+const MODEL_CONFIG = {
+  rotationSpeed: 0.019,      // increase/decrease rotation speed
+  scale: 3.0,               // model size ↑ (increase), ↓ (decrease)
+  initialTilt: [1.5, 12.12, 0], // initial rotation
+}
 
 function Model() {
   const { scene } = useGLTF('/models/SAPS.glb')
   const modelRef = useRef()
 
-  // smooth rotation target
   const targetRot = useRef(new THREE.Euler())
 
+  // --- INITIAL ROTATION ---
   useEffect(() => {
     if (modelRef.current) {
-      // Initial rotation
       modelRef.current.rotation.set(
-        1.5078347778320313,
-        12.125333709716797,
-        0
+        MODEL_CONFIG.initialTilt[0],
+        MODEL_CONFIG.initialTilt[1],
+        MODEL_CONFIG.initialTilt[2]
       )
     }
   }, [])
 
+  // --- ROTATION ANIMATION ---
   useFrame(() => {
-    if (modelRef.current) {
-      // smooth rotate around its own axis
-      targetRot.current.z += 0.01
+    if (!modelRef.current) return
 
-      // smooth interpolation
-      modelRef.current.rotation.z = THREE.MathUtils.lerp(
-        modelRef.current.rotation.z,
-        targetRot.current.z,
-        0.1
-      )
-    }
-  })
+    // update target rotation
+    targetRot.current.z += MODEL_CONFIG.rotationSpeed
 
-  return <primitive ref={modelRef} object={scene} scale={1} />
-}
-
-function CustomSmoothZoom() {
-  const { camera } = useThree()
-  const targetZoom = useRef(camera.position.z)
-
-  useEffect(() => {
-    const handleWheel = (e) => {
-      targetZoom.current -= e.deltaY * 0.01
-      targetZoom.current = Math.min(Math.max(targetZoom.current, 1), 20)
-    }
-
-    window.addEventListener('wheel', handleWheel)
-    return () => window.removeEventListener('wheel', handleWheel)
-  }, [])
-
-  useFrame(() => {
-    // Smooth zoom interpolation
-    camera.position.z = THREE.MathUtils.lerp(
-      camera.position.z,
-      targetZoom.current,
-      0.08
+    // smooth rotation
+    modelRef.current.rotation.z = THREE.MathUtils.lerp(
+      modelRef.current.rotation.z,
+      targetRot.current.z,
+      0.1
     )
   })
 
-  return null
+  return (
+    <primitive
+      ref={modelRef}
+      object={scene}
+      scale={MODEL_CONFIG.scale} // 🎯 easy control
+    />
+  )
 }
 
 export default function ModelViewer() {
   return (
-    <div className="w-screen h-screen m-0 p-0 overflow-hidden relative">
+    <div className="w-screen h-screen m-0 p-0 overflow-hidden">
       <div
-        className="absolute inset-0 -z-10"
+        className="absolute w-screen h-screen inset-0 -z-10"
         style={{
           background: 'linear-gradient(180deg, #2e2e2e 0%, #0f0f0f 100%)',
         }}
       ></div>
 
-      <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
+      <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[5, 5, 5]} intensity={1.2} />
         <Environment preset="studio" />
-
         <Model />
-
-        <OrbitControls
-          enablePan={false}
-          enableZoom={false}
-          enableRotate={true}
-          rotateSpeed={0.3}     // smooth rotate
-          dampingFactor={0.1}   // smooth motion
-          enableDamping={true}
-        />
-
-        <CustomSmoothZoom />
       </Canvas>
     </div>
   )
