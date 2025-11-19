@@ -32,75 +32,19 @@ export default function AboutSAPS() {
   const letterRefs = useRef([]);
   const titleRefs = useRef([]);
   const descRefs = useRef([]);
-  const dustRef = useRef(null);
-  const mainRef = useRef(null);
-
-  // 🌟 CREATE DUST PARTICLES (50–80)
-  const createDust = () => {
-    const container = dustRef.current;
-    for (let i = 0; i < 60; i++) {
-      const dot = document.createElement("div");
-      dot.className = "dust-dot";
-      container.appendChild(dot);
-    }
-  };
 
   useEffect(() => {
-    createDust();
-
     const ctx = gsap.context(() => {
-      // ✨ DUST REVEAL ANIMATION (Intro)
-      const dustDots = gsap.utils.toArray(".dust-dot");
 
-      gsap.set(dustDots, {
-        x: 0,
-        y: 0,
+      // GLOBAL SCROLL SECTION
+      gsap.from(".main-title", {
         opacity: 0,
-        scale: 0.2,
+        y: 50,
+        duration: 1.2,
+        ease: "power3.out",
       });
 
-      gsap.to(dustDots, {
-        opacity: 1,
-        scale: () => Math.random() * 1.2 + 0.5,
-        x: () => (Math.random() - 0.5) * 600,
-        y: () => (Math.random() - 0.5) * 300,
-        duration: 1.8,
-        ease: "power2.out",
-        stagger: { amount: 0.8 },
-      });
-
-      // ✨ REVEAL SAPS MAIN TITLE
-      gsap.fromTo(
-        mainRef.current,
-        { opacity: 0, scale: 0.8, filter: "blur(10px)" },
-        {
-          opacity: 1,
-          scale: 1,
-          filter: "blur(0px)",
-          duration: 2,
-          ease: "power3.out",
-          delay: 0.3,
-        }
-      );
-
-      // 🌀 DUST EXIT TRANSITION (when scrolling)
-      gsap.to(dustDots, {
-        opacity: 0,
-        scale: 0.1,
-        x: () => (Math.random() - 0.5) * 200,
-        y: () => (Math.random() - 0.5) * 150,
-        scrollTrigger: {
-          trigger: mainRef.current,
-          start: "top top",
-          end: "bottom+=200 top",
-          scrub: true,
-        },
-      });
-
-      // ----------------------------------------------------------------------------------
-      // ⭐ EXISTING 4-LETTER PARALLAX SCROLL ANIMATIONS
-      // ----------------------------------------------------------------------------------
-
+      // LOOP THROUGH 4 LETTERS
       data.forEach((item, i) => {
         const tl = gsap.timeline({
           scrollTrigger: {
@@ -126,7 +70,7 @@ export default function AboutSAPS() {
             opacity: 1,
             y: 0,
             filter: "blur(0px)",
-            duration: 1,
+            duration: 1.2,
             ease: "power3.out",
           },
           "-=0.4"
@@ -152,27 +96,20 @@ export default function AboutSAPS() {
   return (
     <section
       ref={containerRef}
-      className="relative w-full min-h-screen bg-[#0f0f0f] text-white py-[200px] px-10 overflow-hidden"
+      className="relative w-full min-h-screen bg-[#0f0f0f] text-white py-[200px] px-10"
     >
-      {/* 🔥 DUST PARTICLE CONTAINER */}
-      <div
-        ref={dustRef}
-        className="absolute top-0 left-0 w-full h-full pointer-events-none"
-      />
-
       {/* MAIN TITLE */}
-      <h1
-        ref={mainRef}
-        className="main-title text-center text-[130px] font-cinzel tracking-[0.1em] text-[#d4b878] mb-[200px] relative z-[2]"
-      >
+      <h1 className="main-title text-center text-[130px] font-cinzel tracking-[0.1em] text-[#d4b878] mb-[200px]">
         SAPS
       </h1>
 
-      {/* 4 SCROLL LETTERS */}
-      <div className="flex flex-col gap-[300px] max-w-[1200px] mx-auto relative z-[3]">
+      {/* 4 SCROLL SECTIONS */}
+      <div className="flex flex-col gap-[300px] max-w-[1200px] mx-auto">
+
         {data.map((item, i) => (
           <div key={i} className="relative w-full flex flex-col items-center">
-            {/* LETTER */}
+
+            {/* ORIGINAL LETTER */}
             <div
               ref={(el) => (letterRefs.current[i] = el)}
               className="text-[180px] font-cinzel text-[#d4b878] opacity-40 select-none"
@@ -180,7 +117,7 @@ export default function AboutSAPS() {
               {item.letter}
             </div>
 
-            {/* WORD TITLE */}
+            {/* NEW WORD */}
             <h2
               ref={(el) => (titleRefs.current[i] = el)}
               className="text-[70px] font-cinzel text-[#e2c797] tracking-[0.25em] mt-[-100px] opacity-0"
@@ -195,24 +132,10 @@ export default function AboutSAPS() {
             >
               {item.desc}
             </p>
+
           </div>
         ))}
       </div>
-
-      {/* DUST PARTICLE STYLE */}
-      <style>{`
-        .dust-dot {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 6px;
-          height: 6px;
-          background: radial-gradient(circle, #e5c48b, #b3925e);
-          border-radius: 50%;
-          pointer-events: none;
-          filter: blur(2px);
-        }
-      `}</style>
     </section>
   );
 }
