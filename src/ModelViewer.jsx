@@ -5,7 +5,7 @@ import * as THREE from 'three'
 
 // 👉 CONFIG — change these anytime
 const MODEL_CONFIG = {
-  rotationSpeed: 0.019,      // increase/decrease rotation speed
+  rotationSpeed: 0.009,      // increase/decrease rotation speed
   scale: 3.0,               // model size ↑ (increase), ↓ (decrease)
   initialTilt: [1.5, 12.12, 0], // initial rotation
 }

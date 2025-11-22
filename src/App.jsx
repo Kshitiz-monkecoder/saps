@@ -4,6 +4,7 @@ import Demo from './Sections/Demo'
 import AboutSection from './Sections/AboutSection'
 import SolarSystemSection from './Sections/SolarSystemSection'
 import AboutSAPS from './Sections/AboutSAPS.jsx'
+import BrandingSection from './Pages/BrandingSection.jsx'
 
 function App() {
   return (
@@ -11,9 +12,9 @@ function App() {
       <HeroSection />
       <AboutSAPS />
       {/* <AboutSection /> */}
-      <Demo />
       <SolarSystemSection />
-      
+      <Demo />
+      <BrandingSection />
     </div>
   )
 }

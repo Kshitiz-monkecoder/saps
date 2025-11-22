@@ -1,7 +1,12 @@
 // SolarSystemLuxuryFINAL_GoldTheme.jsx
 import React, { useRef, useState, Suspense, useMemo } from "react";
-import { Canvas, useFrame, extend } from "@react-three/fiber";
-import { OrbitControls, Stars, useTexture, Effects } from "@react-three/drei";
+import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
+import {
+  OrbitControls,
+  Stars,
+  useTexture,
+  Effects,
+} from "@react-three/drei";
 import * as THREE from "three";
 import { UnrealBloomPass } from "three-stdlib";
 
@@ -11,9 +16,9 @@ extend({ UnrealBloomPass });
    LUXURY THEME
 --------------------------------------- */
 const THEME = {
-  bg: "#000000",                          // Pure premium black
-  gold: "#c9a959",                        // Brushed gold
-  silver: "#d3d3d3",                      // Luxury silver accents
+  bg: "#000000",
+  gold: "#c9a959",
+  silver: "#d3d3d3",
   cardBg: "rgba(255,255,255,0.03)",
   cardBorder: "rgba(201,169,89,0.25)",
 };
@@ -60,8 +65,8 @@ const PLANETS = [
   },
   {
     id: "p5",
-    name: "AI Solutions",
-    desc: "Automation, recommendations & custom AI-driven systems.",
+    name: "Marketing",
+    desc: "Growth systems powered by AI and strategic funnels.",
     size: 3.5,
     distance: 45,
     speed: 0.12,
@@ -70,14 +75,14 @@ const PLANETS = [
 ];
 
 /* ---------------------------------------
-   SUN — Gold Radiance
+   SUN
 --------------------------------------- */
 function GoldenSun({ radius = 1.4 }) {
   const sunRef = useRef();
   const tex = useTexture("/textures/sun.jpg");
 
   useFrame(({ clock }) => {
-    sunRef.current.rotation.y = clock.getElapsedTime() * 0.18;
+    sunRef.current.rotation.y = clock.getElapsedTime() * 0.2;
   });
 
   return (
@@ -87,38 +92,39 @@ function GoldenSun({ radius = 1.4 }) {
         <meshStandardMaterial
           map={tex}
           emissive={THEME.gold}
-          emissiveIntensity={3.1}
+          emissiveIntensity={3.5}
           roughness={0.25}
         />
       </mesh>
 
-      <pointLight color={THEME.gold} intensity={8} distance={260} />
+      {/* Stronger light */}
+      <pointLight color={THEME.gold} intensity={10} distance={300} />
     </group>
   );
 }
 
 /* ---------------------------------------
-   LUXURY GOLD PARTICLES
+   GOLD PARTICLES
 --------------------------------------- */
-function GoldenParticles({ count = 450 }) {
+function GoldenParticles({ count = 500 }) {
   const mesh = useRef();
 
   const positions = useMemo(() => {
     const arr = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      const r = 40 + Math.random() * 140;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = (Math.random() - 0.5) * Math.PI;
+      const r = 50 + Math.random() * 130;
+      const t = Math.random() * Math.PI * 2;
+      const p = (Math.random() - 0.5) * Math.PI;
 
-      arr[i * 3] = Math.cos(theta) * Math.cos(phi) * r;
-      arr[i * 3 + 1] = Math.sin(phi) * 22 + (Math.random() - 0.5) * 8;
-      arr[i * 3 + 2] = Math.sin(theta) * Math.cos(phi) * r;
+      arr[i * 3] = Math.cos(t) * Math.cos(p) * r;
+      arr[i * 3 + 1] = Math.sin(p) * 30;
+      arr[i * 3 + 2] = Math.sin(t) * Math.cos(p) * r;
     }
     return arr;
   }, []);
 
   useFrame(({ clock }) => {
-    mesh.current.rotation.y = clock.getElapsedTime() * 0.012;
+    mesh.current.rotation.y = clock.getElapsedTime() * 0.015;
   });
 
   return (
@@ -127,13 +133,13 @@ function GoldenParticles({ count = 450 }) {
         <bufferAttribute
           attach="attributes-position"
           array={positions}
-          itemSize={3}
           count={positions.length / 3}
+          itemSize={3}
         />
       </bufferGeometry>
       <pointsMaterial
         size={0.55}
-        opacity={0.9}
+        opacity={1}
         transparent
         sizeAttenuation
         depthWrite={false}
@@ -145,7 +151,28 @@ function GoldenParticles({ count = 450 }) {
 }
 
 /* ---------------------------------------
-   PLANET (hover glow, orbit)
+   AUTO CAMERA ORBIT (Slow)
+--------------------------------------- */
+function AutoCameraMotion() {
+  const { camera } = useThree();
+  const t = useRef(0);
+
+  useFrame(() => {
+    t.current += 0.002;
+
+    const radius = 65;
+
+    camera.position.x = Math.sin(t.current) * radius;
+    camera.position.z = Math.cos(t.current) * radius;
+
+    camera.lookAt(0, 0, 0);
+  });
+
+  return null;
+}
+
+/* ---------------------------------------
+   PLANET (Hover Effects, Rotation, Scale)
 --------------------------------------- */
 function Planet({ data, hoveredId, setHoveredId, onSelect }) {
   const pivot = useRef();
@@ -153,20 +180,40 @@ function Planet({ data, hoveredId, setHoveredId, onSelect }) {
   const orbitRing = useRef();
   const tex = useTexture(data.texture);
 
+  const scaleRef = useRef(1);
+
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
-    pivot.current.rotation.y += data.speed * 0.035;
+
+    // Normal orbits
+    const isHovered = hoveredId === data.id;
+pivot.current.rotation.y += data.speed * (isHovered ? 0.012 : 0.035);
+
+
+    // Slight bouncing
     pivot.current.rotation.x = Math.sin(t * 0.07) * 0.015;
+
+    // Slow self-rotation
     mesh.current.rotation.y += 0.004;
 
+    // On hover → faster rotation
+    if (hoveredId === data.id) {
+      mesh.current.rotation.y += 0.035;
+    }
+
+    // Ring wobble
     if (orbitRing.current)
       orbitRing.current.rotation.z = Math.sin(t * 0.05) * 0.02;
+
+    // Hover scale animation
+    scaleRef.current += hoveredId === data.id ? 0.05 : -0.05;
+    scaleRef.current = THREE.MathUtils.clamp(scaleRef.current, 1, 1.25);
+    mesh.current.scale.set(scaleRef.current, scaleRef.current, scaleRef.current);
   });
 
   return (
     <group ref={pivot}>
       <group position={[data.distance, 0, 0]}>
-        {/* MAIN PLANET */}
         <mesh
           ref={mesh}
           onPointerOver={() => setHoveredId(data.id)}
@@ -176,33 +223,33 @@ function Planet({ data, hoveredId, setHoveredId, onSelect }) {
           <sphereGeometry args={[data.size, 64, 64]} />
           <meshPhysicalMaterial
             map={tex}
-            metalness={0.2}
+            metalness={0.35}
             roughness={0.45}
-            clearcoat={0.22}
+            clearcoat={0.4}
             clearcoatRoughness={0.08}
           />
         </mesh>
 
-        {/* GOLDEN HALO */}
+        {/* Hover Glow */}
         <mesh>
-          <sphereGeometry args={[data.size * 1.05, 32, 32]} />
+          <sphereGeometry args={[data.size * 1.07, 32, 32]} />
           <meshBasicMaterial
             color={THEME.gold}
             transparent
-            opacity={hoveredId === data.id ? 0.2 : 0.06}
+            opacity={hoveredId === data.id ? 0.55 : 0.08}
             depthWrite={false}
             blending={THREE.AdditiveBlending}
           />
         </mesh>
       </group>
 
-      {/* ORBIT RING */}
+      {/* Orbit Ring */}
       <mesh ref={orbitRing} rotation={[Math.PI / 2, 0, 0]}>
         <ringGeometry args={[data.distance - 0.05, data.distance + 0.05, 256]} />
         <meshBasicMaterial
           side={THREE.DoubleSide}
           transparent
-          opacity={hoveredId === data.id ? 0.28 : 0.14}
+          opacity={hoveredId === data.id ? 0.35 : 0.15}
           color={THEME.silver}
         />
       </mesh>
@@ -222,21 +269,35 @@ export default function SolarSystemLuxuryFinal({ style }) {
       className="w-full relative"
       style={{
         height: style?.height || "78vh",
-        background: `radial-gradient(circle at 30% 10%, #1a1a1a 0%, #000000 70%)`,
+        background: `radial-gradient(circle at 25% 10%, #141414 0%, #000 75%)`,
       }}
     >
-      {/* 3D CANVAS */}
-      <Canvas camera={{ position: [0, 6, 40], fov: 42 }}>
+      <Canvas camera={{ position: [0, 22, 65], fov: 54 }}
+      gl={{
+    antialias: false, // 🔥 +20 FPS
+    powerPreference: "high-performance", // 🔥 Force GPU turbo mode
+    alpha: false,
+  }}
+  dpr={[1, 1.4]} // 🔥 Balanced sharpness + FPS 
+  >
         <Suspense fallback={null}>
           <color attach="background" args={[THEME.bg]} />
 
-          <ambientLight intensity={0.22} />
-          <directionalLight position={[20, 30, 10]} intensity={0.55} />
+          {/* Lighting Balance */}
+          <ambientLight intensity={0.3} />
+          <directionalLight
+            position={[50, 80, 40]}
+            intensity={0.85}
+            color={THEME.gold}
+          />
 
-          <Stars radius={350} count={900} depth={80} factor={5} fade speed={0.15} />
+          <Stars radius={350} count={1000} depth={100} fade speed={0.15} />
 
           <GoldenParticles />
           <GoldenSun />
+
+          {/* Auto cinematic camera motion */}
+          <AutoCameraMotion />
 
           {PLANETS.map((p) => (
             <Planet
@@ -248,11 +309,13 @@ export default function SolarSystemLuxuryFinal({ style }) {
             />
           ))}
 
+          {/* Cinematic Bloom */}
           <Effects>
-            <unrealBloomPass threshold={0.12} strength={1.65} radius={0.9} />
+            <unrealBloomPass threshold={0.12} strength={1.9} radius={1.0} />
           </Effects>
 
-          <OrbitControls enableZoom enableRotate />
+          {/* Controlled orbiting */}
+          <OrbitControls enableZoom={true} enableRotate={false} />
         </Suspense>
       </Canvas>
 
@@ -264,10 +327,10 @@ export default function SolarSystemLuxuryFinal({ style }) {
         </div>
       </div>
 
-      {/* FIXED SIDEBAR (RIGHT PANEL) */}
+      {/* RIGHT PANEL */}
       <div className="absolute right-6 top-6 flex flex-col gap-4 items-end">
 
-        {/* CATEGORY LIST */}
+        {/* LIST */}
         <div className="p-2 rounded-xl" style={{ backdropFilter: "blur(6px)" }}>
           {PLANETS.map((p) => (
             <div key={p.id} className="flex items-center gap-3 mb-2">
@@ -277,7 +340,7 @@ export default function SolarSystemLuxuryFinal({ style }) {
                   height: 12,
                   borderRadius: 6,
                   background: THEME.gold,
-                  boxShadow: `0 0 10px ${THEME.gold}`,
+                  boxShadow: `0 0 12px ${THEME.gold}`,
                 }}
               />
               <div className="text-sm" style={{ color: THEME.silver }}>
@@ -310,18 +373,14 @@ export default function SolarSystemLuxuryFinal({ style }) {
               const d = PLANETS.find((x) => x.id === hoveredId);
               return (
                 <div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm" style={{ color: THEME.gold }}>
-                        {d.name}
-                      </div>
-                      <div
-                        className="text-xs mt-1"
-                        style={{ color: "rgba(255,255,255,0.8)" }}
-                      >
-                        {d.desc}
-                      </div>
-                    </div>
+                  <div className="text-sm" style={{ color: THEME.gold }}>
+                    {d.name}
+                  </div>
+                  <div
+                    className="text-xs mt-1"
+                    style={{ color: "rgba(255,255,255,0.8)" }}
+                  >
+                    {d.desc}
                   </div>
                 </div>
               );
@@ -335,8 +394,7 @@ export default function SolarSystemLuxuryFinal({ style }) {
         <div
           className="absolute left-1/2 -translate-x-1/2 bottom-8 w-[min(880px,92%)] p-6 rounded-3xl"
           style={{
-            background:
-              "linear-gradient(180deg, rgba(10,10,10,0.8), rgba(0,0,0,0.5))",
+            background: "linear-gradient(180deg, rgba(10,10,10,0.9), rgba(0,0,0,0.6))",
             border: `1px solid rgba(201,169,89,0.22)`,
             backdropFilter: "blur(14px)",
           }}
