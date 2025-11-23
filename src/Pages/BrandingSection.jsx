@@ -3,6 +3,35 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const shapes = ["circle", "triangle", "square"];
 
+// HOLOGRAPHIC DISSOLVE VARIANTS 🔥 (Same as AboutSAPS dissolve)
+const dissolveVariants = {
+  initial: {
+    opacity: 0,
+    scale: 0.6,
+    y: 40,
+    filter: "blur(20px)",
+  },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 1.6,
+      ease: "easeOut",
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 1.5,
+    filter: "blur(30px)",
+    transition: {
+      duration: 1.3,
+      ease: "easeInOut",
+    },
+  },
+};
+
 export default function BrandingSection() {
   const [shapeIndex, setShapeIndex] = useState(0);
 
@@ -47,13 +76,6 @@ export default function BrandingSection() {
             Brand Strategy & <br /> Creative Direction
           </h1>
 
-          {/* <p className="text-lg text-gray-300 max-w-md leading-relaxed">
-            We craft your brand’s voice, impact, and visual universe—shaping a
-            refined, cinematic identity that doesn’t just attract, but
-            captivates.
-          </p> */}
-
-          {/* BULLET POINTS */}
           <ul className="space-y-4 text-gray-300 text-[15px] leading-relaxed">
             <li className="flex gap-3">
               <span className="text-yellow-400 mt-1">✦</span>
@@ -77,17 +99,30 @@ export default function BrandingSection() {
             </li>
           </ul>
 
-          <button className="px-8 py-3 mt-4 border border-yellow-600/40 text-yellow-300 rounded-xl backdrop-blur-md hover:bg-yellow-600/20 hover:shadow-[0_0_45px_rgba(255,230,150,0.2)] transition-all duration-500">
-            Explore Branding →
+          <button
+            className="
+              relative px-10 py-3 mt-4 font-semibold
+              text-[#EED8A6] tracking-wide rounded-xl overflow-hidden
+              border border-[#C9A86A]/40 bg-white/5 backdrop-blur-xl
+              shadow-[inset_0_0_25px_rgba(255,255,255,0.05)]
+              transition-all duration-500 hover:shadow-[0_0_60px_rgba(255,215,140,0.35)]
+              hover:border-[#F1D08A]/60 hover:text-[#F3E6C3] cursor-pointer
+            "
+          >
+            <span className="absolute inset-0 bg-gradient-to-r from-[#7A5F33]/20 via-transparent to-[#E6C07B]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+            <span className="absolute left-[-150%] top-0 h-full w-[120%] bg-gradient-to-r from-transparent via-white/25 to-transparent rotate-12 transition-all duration-700 ease-out group-hover:left-[150%]"></span>
+            <span className="relative z-10 flex items-center gap-2">
+              Contact for more <span className="text-[#F3DFA6]">→</span>
+            </span>
           </button>
         </motion.div>
 
         {/* ================================================== */}
-        {/* RIGHT — ULTRA CINEMATIC SHAPE TRANSITIONS */}
+        {/* RIGHT — DISSOLVING SHAPE TRANSITIONS */}
         {/* ================================================== */}
         <div className="relative flex justify-center items-center h-[380px] md:h-[420px]">
           
-          {/* Floating particles */}
+          {/* Ambient particles */}
           <div className="absolute inset-0 animate-pulse opacity-40 bg-[radial-gradient(circle,rgba(255,255,255,0.09),transparent_70%)] blur-3xl"></div>
 
           <AnimatePresence mode="wait">
@@ -95,10 +130,10 @@ export default function BrandingSection() {
             {currentShape === "circle" && (
               <motion.div
                 key="circle"
-                initial={{ opacity: 0, scale: 0.6 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.4 }}
-                transition={{ duration: 2.3, ease: "easeInOut" }}
+                variants={dissolveVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
                 className="absolute"
               >
                 <div className="w-56 h-56 rounded-full bg-gradient-to-br from-blue-400 to-blue-800 shadow-[0_0_100px_-10px_rgba(80,120,255,0.55)]"></div>
@@ -109,17 +144,14 @@ export default function BrandingSection() {
             {currentShape === "triangle" && (
               <motion.div
                 key="triangle"
-                initial={{ opacity: 0, scale: 0.6 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.4 }}
-                transition={{ duration: 2.3, ease: "easeInOut" }}
+                variants={dissolveVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
                 className="absolute"
               >
                 <div className="relative flex items-center justify-center">
-                  {/* Glow */}
                   <div className="absolute w-56 h-56 rounded-full bg-purple-500/25 blur-3xl"></div>
-
-                  {/* Actual Triangle */}
                   <div
                     className="
                       w-0 h-0
@@ -136,10 +168,10 @@ export default function BrandingSection() {
             {currentShape === "square" && (
               <motion.div
                 key="square"
-                initial={{ opacity: 0, scale: 0.6 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.4 }}
-                transition={{ duration: 2.3, ease: "easeInOut" }}
+                variants={dissolveVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
                 className="absolute"
               >
                 <div className="w-52 h-52 bg-gradient-to-br from-blue-300 to-blue-700 rounded-xl shadow-[0_0_100px_-15px_rgba(80,120,255,0.55)]"></div>

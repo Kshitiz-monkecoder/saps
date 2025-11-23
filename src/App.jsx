@@ -1,22 +1,28 @@
-import React from 'react'
-import HeroSection from './Sections/HeroSection'
-import Demo from './Sections/Demo'
-import AboutSection from './Sections/AboutSection'
-import SolarSystemSection from './Sections/SolarSystemSection'
-import AboutSAPS from './Sections/AboutSAPS.jsx'
-import BrandingSection from './Pages/BrandingSection.jsx'
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./Pages/Home";
+import BrandingSection from "./Pages/BrandingSection";
+import PhotographyVideoSection from "./Pages/PhotographyVideoSection";
+import WebDesignDevSection from "./Pages/WebDesignDevSection";
+import SocialMediaManagementSection from "./Pages/SocialMediaManagementSection";
+import ThreeDDevVisualizationSection from "./Pages/ThreeDDevVisualizationSection";
 
 function App() {
   return (
-    <div className="App ">
-      <HeroSection />
-      <AboutSAPS />
-      {/* <AboutSection /> */}
-      <SolarSystemSection />
-      <Demo />
-      <BrandingSection />
-    </div>
-  )
+    <Router>
+      <Routes>
+        {/* Home Page */}
+        <Route path="/" element={<Home />} />
+
+        {/* Branding Service Page */}
+        <Route path="/services/branding" element={<BrandingSection />} />
+        <Route path="/services/photography" element={<PhotographyVideoSection />} />
+        <Route path="/services/web-design-development" element={<WebDesignDevSection />} />
+        <Route path="/services/social-media" element={<SocialMediaManagementSection />} />
+        <Route path="/services/3d-models" element={<ThreeDDevVisualizationSection />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
