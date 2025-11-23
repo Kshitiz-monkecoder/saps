@@ -1,5 +1,5 @@
 // SolarSystemLuxuryFINAL_GoldTheme.jsx
-import React, { useRef, useState, Suspense, useMemo } from "react";
+import React, { useRef, useState, Suspense, useMemo, useEffect } from "react";
 import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
 import {
   OrbitControls,
@@ -29,12 +29,13 @@ const THEME = {
 const PLANETS = [
   {
     id: "p1",
-    name: "3D Animation",
-    desc: "Cinematic product renders, motion visuals & world-class animations.",
+    name: "Photography & Video Production",
+    desc: "High-quality visuals, cinematic shots and complete production support.",
     size: 1.2,
     distance: 10,
     speed: 0.8,
     texture: "/textures/planet1.jpg",
+    route: "/services/photography",
   },
   {
     id: "p2",
@@ -44,35 +45,82 @@ const PLANETS = [
     distance: 17,
     speed: 0.5,
     texture: "/textures/planet2.jpg",
+    route: "/services/web-design-development",
   },
   {
     id: "p3",
-    name: "Video Editing",
-    desc: "High-impact editing crafted for storytelling & brand elevation.",
+    name: "Branding & Creative Direction",
+    desc: "High-end brand identity, visual systems & luxury-focused creative strategy.",
     size: 2.0,
     distance: 25,
     speed: 0.34,
     texture: "/textures/planet3.jpg",
+    route: "/services/branding",
   },
   {
     id: "p4",
-    name: "AI Solutions",
-    desc: "Automation, recommendations & custom AI-driven systems.",
-    size: 3.0,
+    name: "3D Animation",
+    desc: "Cinematic product renders, motion visuals & world-class animations.",
+    size: 2.6,
     distance: 33,
     speed: 0.22,
     texture: "/textures/planet4.jpg",
+    route: "/services/3d-models",
   },
   {
     id: "p5",
-    name: "Marketing",
-    desc: "Growth systems powered by AI and strategic funnels.",
-    size: 3.5,
+    name: "Social Media Management",
+    desc: "Strategic content, scheduling and growth systems across all platforms.",
+    size: 3.1,
     distance: 45,
-    speed: 0.12,
-    texture: "/textures/planet4.jpg",
+    speed: 0.15,
+    texture: "/textures/planet5.jpg",
+    route: "/services/social-media",
   },
 ];
+
+/* ---------------------------------------
+   SCROLL-LIMIT CAMERA (25% influence)
+--------------------------------------- */
+function useLimitedScrollCamera(maxScroll = 0.15) {
+  const { camera } = useThree();
+  const baseZ = 78; // main camera position (from your Canvas)
+  const zoomRange = 3; // tiny, subtle zoom
+
+  useEffect(() => {
+    const onScroll = () => {
+      const section = document.getElementById("solar-section");
+      if (!section) return;
+
+      const rect = section.getBoundingClientRect();
+
+      // Only active when section is visible
+      if (rect.top > window.innerHeight || rect.bottom < 0) return;
+
+      const scrollPos = Math.min(
+        Math.max((window.innerHeight - rect.top) / rect.height, 0),
+        1
+      );
+
+      const influence = Math.min(scrollPos, maxScroll);
+
+      // ❗ Only small Z-movement — NO rotation, NO tilt
+      camera.position.z = baseZ - influence * zoomRange;
+      camera.position.y = 22; // lock Y
+      camera.position.x = 0;  // lock X
+      camera.lookAt(0, 0, 0); // always look center
+    };
+
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [camera]);
+}
+
+
+function LimitedScrollCamera() {
+  useLimitedScrollCamera(0.25);
+  return null;
+}
 
 /* ---------------------------------------
    SUN
@@ -96,8 +144,6 @@ function GoldenSun({ radius = 1.4 }) {
           roughness={0.25}
         />
       </mesh>
-
-      {/* Stronger light */}
       <pointLight color={THEME.gold} intensity={10} distance={300} />
     </group>
   );
@@ -151,28 +197,7 @@ function GoldenParticles({ count = 500 }) {
 }
 
 /* ---------------------------------------
-   AUTO CAMERA ORBIT (Slow)
---------------------------------------- */
-function AutoCameraMotion() {
-  const { camera } = useThree();
-  const t = useRef(0);
-
-  useFrame(() => {
-    t.current += 0.002;
-
-    const radius = 65;
-
-    camera.position.x = Math.sin(t.current) * radius;
-    camera.position.z = Math.cos(t.current) * radius;
-
-    camera.lookAt(0, 0, 0);
-  });
-
-  return null;
-}
-
-/* ---------------------------------------
-   PLANET (Hover Effects, Rotation, Scale)
+   PLANET (Updated: 50% slower)
 --------------------------------------- */
 function Planet({ data, hoveredId, setHoveredId, onSelect }) {
   const pivot = useRef();
@@ -184,29 +209,21 @@ function Planet({ data, hoveredId, setHoveredId, onSelect }) {
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
-
-    // Normal orbits
     const isHovered = hoveredId === data.id;
-pivot.current.rotation.y += data.speed * (isHovered ? 0.012 : 0.035);
 
+    // 50% slower rotation
+    pivot.current.rotation.y += data.speed * 0.5 * (isHovered ? 0.012 : 0.035);
 
-    // Slight bouncing
     pivot.current.rotation.x = Math.sin(t * 0.07) * 0.015;
 
-    // Slow self-rotation
-    mesh.current.rotation.y += 0.004;
+    mesh.current.rotation.y += 0.002; // slower
 
-    // On hover → faster rotation
-    if (hoveredId === data.id) {
-      mesh.current.rotation.y += 0.035;
-    }
+    if (isHovered) mesh.current.rotation.y += 0.018; // slow-hover spin
 
-    // Ring wobble
     if (orbitRing.current)
       orbitRing.current.rotation.z = Math.sin(t * 0.05) * 0.02;
 
-    // Hover scale animation
-    scaleRef.current += hoveredId === data.id ? 0.05 : -0.05;
+    scaleRef.current += isHovered ? 0.05 : -0.05;
     scaleRef.current = THREE.MathUtils.clamp(scaleRef.current, 1, 1.25);
     mesh.current.scale.set(scaleRef.current, scaleRef.current, scaleRef.current);
   });
@@ -266,24 +283,26 @@ export default function SolarSystemLuxuryFinal({ style }) {
 
   return (
     <div
+      id="services"
       className="w-full relative"
       style={{
-        height: style?.height || "78vh",
+        height: style?.height || "85vh",
         background: `radial-gradient(circle at 25% 10%, #141414 0%, #000 75%)`,
       }}
     >
-      <Canvas camera={{ position: [0, 22, 65], fov: 54 }}
-      gl={{
-    antialias: false, // 🔥 +20 FPS
-    powerPreference: "high-performance", // 🔥 Force GPU turbo mode
-    alpha: false,
-  }}
-  dpr={[1, 1.4]} // 🔥 Balanced sharpness + FPS 
-  >
+      <Canvas
+        camera={{ position: [0, 22, 78], fov: 54 }}
+        gl={{
+          antialias: false,
+          powerPreference: "high-performance",
+          alpha: false,
+        }}
+        dpr={[1, 1.4]}
+      >
         <Suspense fallback={null}>
-          <color attach="background" args={[THEME.bg]} />
+          <LimitedScrollCamera />
 
-          {/* Lighting Balance */}
+          <color attach="background" args={[THEME.bg]} />
           <ambientLight intensity={0.3} />
           <directionalLight
             position={[50, 80, 40]}
@@ -295,9 +314,6 @@ export default function SolarSystemLuxuryFinal({ style }) {
 
           <GoldenParticles />
           <GoldenSun />
-
-          {/* Auto cinematic camera motion */}
-          <AutoCameraMotion />
 
           {PLANETS.map((p) => (
             <Planet
@@ -314,8 +330,8 @@ export default function SolarSystemLuxuryFinal({ style }) {
             <unrealBloomPass threshold={0.12} strength={1.9} radius={1.0} />
           </Effects>
 
-          {/* Controlled orbiting */}
-          <OrbitControls enableZoom={true} enableRotate={false} />
+          {/* Disable zoom completely */}
+          <OrbitControls enableZoom={false} enableRotate={false} />
         </Suspense>
       </Canvas>
 
@@ -328,12 +344,14 @@ export default function SolarSystemLuxuryFinal({ style }) {
       </div>
 
       {/* RIGHT PANEL */}
-      <div className="absolute right-6 top-6 flex flex-col gap-4 items-end">
-
-        {/* LIST */}
+       <div className="absolute right-6 top-6 flex flex-col gap-4 items-end">
         <div className="p-2 rounded-xl" style={{ backdropFilter: "blur(6px)" }}>
           {PLANETS.map((p) => (
-            <div key={p.id} className="flex items-center gap-3 mb-2">
+            <div
+              key={p.id}
+              onClick={() => setSelected(p)}  // make right panel clickable
+              className="flex items-center gap-3 mb-2 cursor-pointer hover:opacity-80 transition"
+            >
               <div
                 style={{
                   width: 12,
@@ -361,7 +379,7 @@ export default function SolarSystemLuxuryFinal({ style }) {
         >
           {!hoveredId ? (
             <div style={{ color: THEME.silver }}>
-              <div style={{ color: THEME.gold }} className="text-sm font-semibold">
+              <div className="text-sm font-semibold" style={{ color: THEME.gold }}>
                 Hover a planet
               </div>
               <div className="text-xs mt-2 opacity-80">
@@ -411,21 +429,95 @@ export default function SolarSystemLuxuryFinal({ style }) {
               <div className="text-sm opacity-80 mt-1">{selected.desc}</div>
 
               <div className="mt-4 flex gap-3">
-                <a
-                  href={`/services/${selected.id}`}
-                  className="px-5 py-2 rounded-lg font-semibold"
-                  style={{ background: THEME.gold, color: "#000" }}
-                >
-                  Open
-                </a>
-                <button
-                  onClick={() => setSelected(null)}
-                  className="px-4 py-2 rounded-lg border"
-                  style={{ borderColor: THEME.cardBorder, color: "#fff" }}
-                >
-                  Close
-                </button>
-              </div>
+  {/* ✨ OPEN BUTTON — Gold Glass Luxury */}
+ <a
+  href={selected.route}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="
+    relative px-7 py-3 rounded-xl font-semibold tracking-wide
+    overflow-hidden group cursor-pointer transition-all duration-500
+    shadow-[0_0_15px_rgba(255,220,140,0.3)]
+  "
+  style={{
+    background:
+      "linear-gradient(135deg, #F8E8B0 0%, #D6B979 45%, #B9984F 100%)",
+    color: "#000",
+  }}
+>
+  {/* 🔥 Outer glow on hover */}
+  <span
+    className="
+      absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100
+      transition-all duration-500
+      shadow-[0_0_35px_10px_rgba(255,220,140,0.55)]
+    "
+  />
+
+  {/* ✨ Gold Shine Swipe */}
+  <span
+    className="
+      absolute left-[-130%] top-0 h-full w-[180%]
+      bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.8),transparent)]
+      opacity-20 group-hover:opacity-70
+      transition-all duration-[900ms] ease-out
+      group-hover:left-[150%]
+    "
+  />
+
+  {/* 💥 Golden Pulse on Click */}
+  <span
+    className="
+      absolute inset-0 rounded-xl pointer-events-none
+      scale-0 group-active:scale-100 opacity-0 group-active:opacity-40
+      transition-all duration-300
+      bg-[radial-gradient(circle,rgba(255,230,150,0.65),transparent_70%)]
+    "
+  />
+
+  <span className="relative z-10 flex items-center gap-2">
+    Open <span className="text-yellow-700">→</span>
+  </span>
+</a>
+
+
+  {/* ✨ CLOSE BUTTON — Black-Gold Minimal Elite */}
+  <button
+    onClick={() => setSelected(null)}
+    className="
+      relative px-5 py-2.5 rounded-xl font-medium tracking-wide 
+      overflow-hidden border backdrop-blur-xl group
+      transition-all duration-500 cursor-pointer
+    "
+    style={{
+      border: "1px solid rgba(200,180,120,0.35)",
+      color: "#E9D9A0",
+      background: "rgba(20,20,20,0.4)",
+      boxShadow: "inset 0 0 30px rgba(255,255,255,0.05)",
+    }}
+  >
+    {/* hover glow */}
+    <span
+      className="
+        absolute inset-0 opacity-0 group-hover:opacity-100
+        bg-[linear-gradient(135deg,rgba(255,215,150,0.15),rgba(0,0,0,0))]
+        transition-opacity duration-500
+      "
+    />
+
+    {/* subtle stroke animation */}
+    <span
+      className="
+        absolute bottom-0 left-0 w-0 group-hover:w-full
+        h-[1.5px] bg-gradient-to-r from-yellow-300 to-yellow-600
+        transition-all duration-500
+      "
+    />
+
+    <span className="relative z-10">Close</span>
+  </button>
+</div>
+
             </div>
           </div>
         </div>

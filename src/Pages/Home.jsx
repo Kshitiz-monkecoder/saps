@@ -10,7 +10,6 @@ export default function Home() {
       <HeroSection />
       <AboutSAPS />
       <SolarSystemSection />
-      <Demo />
     </div>
   );
 }

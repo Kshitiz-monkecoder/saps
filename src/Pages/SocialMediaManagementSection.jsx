@@ -5,7 +5,7 @@ import { FaFacebook } from "react-icons/fa";
 
 export default function SocialMediaManagementSection() {
   return (
-    <section className="relative w-full min-h-screen overflow-hidden bg-black flex items-center justify-center py-28 px-10">
+    <section id="#Services" className="relative w-full min-h-screen overflow-hidden bg-black flex items-center justify-center py-28 px-10">
 
       {/* GOLD AMBIENT GLOW */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[1100px] bg-gradient-radial from-yellow-500/25 via-transparent to-transparent blur-[180px] opacity-70"></div>
@@ -67,60 +67,59 @@ export default function SocialMediaManagementSection() {
         </motion.div>
 
         {/* RIGHT — FLOATING 3D SOCIAL MEDIA SPHERES */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.85, y: 40 }}
-          whileInView={{ opacity: 1, scale: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.4, ease: "easeOut" }}
-          className="relative w-full h-[420px] flex items-center justify-center"
-        >
+      <motion.div
+  initial={{ opacity: 0, scale: 0.85, y: 40 }}
+  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+  viewport={{ once: true }}
+  transition={{ duration: 1.4, ease: "easeOut" }}
+  className="relative w-full h-[420px] flex items-center justify-center"
+>
+  {/* Ambient glow */}
+  <div className="absolute w-[500px] h-[500px] bg-yellow-500/10 blur-[150px] rounded-full"></div>
 
-          {/* Ambient glow */}
-          <div className="absolute w-[500px] h-[500px] bg-yellow-500/10 blur-[150px] rounded-full"></div>
+  {/* SPHERE 1 — INSTAGRAM */}
+  <motion.div
+    animate={{
+      x: [0, 80, 0, -80, 0],       // Circular-ish path
+      y: [0, 0, 80, 0, -80],
+      rotate: [0, 90, 180, 270, 360],
+    }}
+    transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+    className="absolute w-28 h-28 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-yellow-400 shadow-[0_0_60px_20px_rgba(255,80,180,0.3)] flex items-center justify-center"
+  >
+    <BsInstagram className="text-4xl text-white" />
+  </motion.div>
 
-          {/* SPHERE 1 — INSTAGRAM */}
-          <motion.div
-            animate={{
-              x: [0, 60, -40, 0],
-              y: [0, -50, 30, 0],
-              rotate: [0, 90, 180, 360],
-            }}
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute w-28 h-28 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-yellow-400 shadow-[0_0_60px_20px_rgba(255,80,180,0.3)] flex items-center justify-center"
-          >
-            <i className="fa-brands fa-instagram text-4xl text-white"><BsInstagram /></i>
-          </motion.div>
+  {/* SPHERE 2 — FACEBOOK */}
+  <motion.div
+    animate={{
+      x: [0, -100, 0, 100, 0],  // Bigger orbit to avoid collision
+      y: [0, 0, -60, 0, 60],
+      rotate: [0, 180, 270, 360, 450],
+    }}
+    transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
+    className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 shadow-[0_0_50px_15px_rgba(80,160,255,0.3)] flex items-center justify-center"
+  >
+    <FaFacebook className="text-3xl text-white" />
+  </motion.div>
 
-          {/* SPHERE 2 — TWITTER */}
-          <motion.div
-            animate={{
-              x: [0, -70, 30, 0],
-              y: [0, 40, -50, 0],
-              rotate: [0, 180, 270, 360],
-            }}
-            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 shadow-[0_0_50px_15px_rgba(80,160,255,0.3)] flex items-center justify-center"
-          >
-            <i className="fa-brands fa-x-twitter text-3xl text-white"><FaFacebook /></i>
-          </motion.div>
+  {/* SPHERE 3 — YOUTUBE */}
+  <motion.div
+    animate={{
+      x: [0, 60, -60, 60, 0],   // Another offset orbit
+      y: [0, -70, 70, -40, 0],
+      rotate: [0, 120, 240, 360, 480],
+    }}
+    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+    className="absolute w-32 h-32 rounded-full bg-gradient-to-br from-red-500 to-red-700 shadow-[0_0_70px_25px_rgba(255,50,50,0.35)] flex items-center justify-center"
+  >
+    <BsYoutube className="text-4xl text-white" />
+  </motion.div>
 
-          {/* SPHERE 3 — YOUTUBE */}
-          <motion.div
-            animate={{
-              x: [0, 40, -60, 0],
-              y: [0, -30, 50, 0],
-              rotate: [0, 120, 240, 360],
-            }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute w-32 h-32 rounded-full bg-gradient-to-br from-red-500 to-red-700 shadow-[0_0_70px_25px_rgba(255,50,50,0.35)] flex items-center justify-center"
-          >
-            <i className="fa-brands fa-youtube text-4xl text-white"><BsYoutube /></i>
-          </motion.div>
-
-          <p className="absolute bottom-[-40px] text-sm text-gray-400 tracking-[0.25em]">
-            GROW YOUR ONLINE PRESENCE
-          </p>
-        </motion.div>
+  <p className="absolute bottom-[-40px] text-sm text-gray-400 tracking-[0.25em]">
+    GROW YOUR ONLINE PRESENCE
+  </p>
+</motion.div>
 
       </div>
     </section>
