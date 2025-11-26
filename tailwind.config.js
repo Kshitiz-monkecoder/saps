@@ -6,9 +6,13 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+    gold: '#FFD700',
+  },
        fontFamily: {
-      cinzel: ['"Cinzel Decorative"', 'serif'],
-      gotham: ['"Gotham"', 'sans-serif']
+      gotham: ['"Gotham"', 'sans-serif'],
+      cinzel: ["Cinzel", "serif"],
+    montserrat: ["Montserrat", "sans-serif"],
     }
     },
   },

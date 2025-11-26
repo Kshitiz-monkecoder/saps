@@ -460,7 +460,7 @@ export default function SolarSystemLuxuryFinal({ style }) {
       absolute left-[-130%] top-0 h-full w-[180%]
       bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.8),transparent)]
       opacity-20 group-hover:opacity-70
-      transition-all duration-[900ms] ease-out
+      transition-all duration-900 ease-out
       group-hover:left-[150%]
     "
   />
@@ -509,7 +509,7 @@ export default function SolarSystemLuxuryFinal({ style }) {
     <span
       className="
         absolute bottom-0 left-0 w-0 group-hover:w-full
-        h-[1.5px] bg-gradient-to-r from-yellow-300 to-yellow-600
+        h-[1.5px] bg-linear-to-r from-yellow-300 to-yellow-600
         transition-all duration-500
       "
     />

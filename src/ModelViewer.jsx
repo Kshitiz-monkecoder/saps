@@ -53,20 +53,19 @@ function Model() {
 
 export default function ModelViewer() {
   return (
-    <div className="w-screen h-screen m-0 p-0 overflow-hidden">
-      <div
-        className="absolute w-screen h-screen inset-0 -z-10"
-        style={{
-          background: 'linear-gradient(180deg, #2e2e2e 0%, #0f0f0f 100%)',
-        }}
-      ></div>
+    <div className="w-full h-screen m-0 p-0 overflow-hidden">
+  <div
+    className="absolute inset-0 -z-10"
+    style={{ background: 'linear-gradient(180deg, #2e2e2e 0%, #0f0f0f 100%)' }}
+  ></div>
 
-      <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[5, 5, 5]} intensity={1.2} />
-        <Environment preset="studio" />
-        <Model />
-      </Canvas>
-    </div>
+  <Canvas className="w-full h-full" camera={{ position: [0, 0, 6], fov: 45 }}>
+    <ambientLight intensity={0.6} />
+    <directionalLight position={[5, 5, 5]} intensity={1.2} />
+    <Environment preset="studio" />
+    <Model />
+  </Canvas>
+</div>
+
   )
 }
