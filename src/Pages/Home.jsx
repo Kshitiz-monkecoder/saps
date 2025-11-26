@@ -14,10 +14,9 @@ export default function Home() {
       <HeroSection />
       <AboutSAPS />
       <WhatWeProvide />
-      <ScrollingText />
       <SolarSystemSection />
-      
       <Contact />
+      <ScrollingText />
       <Footer />
     </div>
   );
